@@ -1,5 +1,23 @@
 from psycopg2 import connect, sql
 
+class Column:
+    def __init__(self, name):
+        self.name = name
+        print(f"[INFO]:: adding new column {self.name}")
+
+    def __repr__(self):
+        return self.name
+
+
+class Table:
+    def __init__(self, name):
+        self.name = name
+        self.columns = []
+        print(f"[INFO]:: adding new table: {self.name}")
+
+    def __repr__(self):
+        return self.name
+
 class DataBase:
     def __init__(self,name,host=None, database=None, user=None, password=None):
         self.name = name
@@ -13,6 +31,8 @@ class DataBase:
         self.filename = f".{self.name}.ini"
 
         self.connected = False
+
+        self.tables = []
 
     def __repr__(self):
         """
@@ -28,7 +48,7 @@ class DataBase:
         starts connection with database
         """
 
-        print("Conecting to database...")
+        print(f"Conecting to database {self.name}...")
 
         self.connection = connect(
             host = self.host,
@@ -100,7 +120,7 @@ class DataBase:
 
     def sql_select(self, table, columns="*", where=None):
         """
-        a function to write select statements in sql
+        a method to write select statements in sql
         """
 
         if self.connected:
@@ -151,10 +171,9 @@ class DataBase:
             FROM INFORMATION_SCHEMA.tables
             WHERE table_schema = 'public'""")
             for table in self.cursor.fetchall():
-                print(table)
-                tables.append(table[0])
+                tables.append(Table(table[0]))
 
-            return tables
+            self.tables = tables
         else:
             print("[FAIL]:: You are not connected to database.")
 
@@ -164,7 +183,6 @@ class DataBase:
         a method that returns a list of column names in a table
         """
         if self.connected:
-            columns = []
 
             col_names_str = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE "
             col_names_str += f"table_name = '{table}';"
@@ -173,21 +191,20 @@ class DataBase:
                 sql_object = sql.SQL(
                     col_names_str
                 ).format(
-                    sql.Identifier(table)
+                    sql.Identifier(str(table))
                 )
 
                 self.cursor.execute(sql_object)
 
                 col_names = (self.cursor.fetchall() )
 
-                print("\n[INFO]:: Column names: " + col_names)
+                print(f"\n[INFO]:: Column names in {table}: " + str(col_names))
 
                 for col_name in col_names:
-                    columns.append(col_name[0])
+                    table.columns.append(Column(col_name[0]))
 
             except Exception as err:
                 print("get_columns_names ERROR: ", err)
 
-            return columns
         else:
             print("[FAIL]:: You are not connected to database.")

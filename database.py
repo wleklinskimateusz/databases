@@ -18,3 +18,10 @@ def write_db():
 
 if __name__ == "__main__":
     databases = write_db()
+
+    ### Temporary
+    ep = databases[0]
+    ep.db_connect()
+    ep.get_table_names()
+    for tab in ep.tables:
+        ep.get_column_names(tab)
