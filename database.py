@@ -43,8 +43,8 @@ class Program:
         try:
             self.databases[query].db_connect()
             self.mdb = self.databases[query]
-        except psycopg2.OperationalError:
-            print("[FAIL]:: Can't access database: Wrong user or password")
+        except OperationalError:
+            print("[FAIL]:: Can't access database: Wrong credentials")
 
 
     def active_database(self):
@@ -78,18 +78,45 @@ class Program:
                 print("[FAIL]:: Invalid number! Try Again")
                 print()
 
-    def main(self):
+    def add_new_db(self):
+        print("[QUERY]:: Type a unique name for your new database. Name is only for you and has nothing to do with the database itself.")
+        name = input("[INPUT]:: ")
+        if name:
+            new_db = DataBase(name)
+            self.databases.append(new_db)
+
+            print("\n[INFO]:: Type credential for your database:")
+            new_db.host = input("[QUERY]:: host: ")
+            new_db.database = input("[QUERY]:: database: ")
+            new_db.user = input("[QUERY]:: user: ")
+            new_db.password = input("[QUERY]:: password: ")
+            new_db.save_credentials()
+
+    def run(self):
+
+        my_program.setup()
+
         while True:
             if my_program.option == 0:
                 break
+
             elif my_program.option == 1:
                 print(my_program.status())
+
             elif my_program.option == 2:
                 my_program.choose_db()
+
             elif my_program.option == 3:
                 if my_program.mdb:
                     my_program.mdb.get_table_names()
                     my_program.mdb.tables_view()
+
+            elif my_program.option == 4:
+                my_program.mdb.close()
+
+            elif my_program.option == 5:
+                my_program.add_new_db()
+
             input("\n[INFO]: press Enter to continue...")
             print()
             my_program.menu()
@@ -97,11 +124,8 @@ class Program:
 
 
 if __name__ == "__main__":
-
     my_program = Program()
-
-    my_program.setup()
-    my_program.main()
+    my_program.run()
 
 
     ### Temp 1

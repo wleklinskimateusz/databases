@@ -1,4 +1,4 @@
-from psycopg2 import connect, sql
+from psycopg2 import connect, sql, OperationalError
 
 class Column:
     def __init__(self, name):
