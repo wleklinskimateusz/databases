@@ -13,7 +13,7 @@ class Table:
     def __init__(self, name):
         self.name = name
         self.columns = []
-        print(f"[INFO]:: adding new table: {self.name}")
+        # print(f"[INFO]:: adding new table: {self.name}")
 
     def __repr__(self):
         return self.name
