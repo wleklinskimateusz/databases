@@ -177,6 +177,16 @@ class DataBase:
         else:
             print("[FAIL]:: You are not connected to database.")
 
+    def tables_view(self):
+        if self.connected:
+            if not self.tables:
+                self.get_table_names()
+            print()
+
+            for table in self.tables:
+                print(f"||{str(table).upper()}||\n{'-' * 35}")
+
+
 
     def get_column_names(self, table):
         """
