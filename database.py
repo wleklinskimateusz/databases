@@ -20,26 +20,46 @@ def setup():
 
     print("\n\n[INFO]:: YOUR DATABASES:")
     for db in databases:
-        print(f"[DB-{databases.index(db)}]:: {str(db).upper()}")
+        print(f"\t[DB-{databases.index(db)}]:: {str(db).upper()}")
     print()
+
+def choose_db():
 
     print(f"[QUERY]:: Choose database you want to be connected with (number from 0 to {databases.index(databases[-1])}):")
     while True:
         try:
-            query = int(input("[INPUT]:: "))
+            query = int(input("\t[INPUT]:: "))
             if query < 0 or query > databases.index(databases[-1]):
-                raise ValueError
+                raise ValustatuseError
             break
         except ValueError:
-            print("[FAIL]:: Invalid number! Try Again")
+            print("\t[FAIL]:: Invalid number! Try Again")
 
-    databases[query].db_connect()
-    return (query, databases)
+    try:
+        databases[query].db_connect()
+        return (query, databases)
+    except psycopg2.OperationalError:
+        print("[FAIL]:: Can't access database: Wrong user or password")
+
+
+def active_database(databases):
+    for db in databases:
+        if db.connected:
+            return db
+
+def status(databases):
+    db = active_database
+    if db:
+        return f"[INFO]:: You are connected to {db}"
+    else:
+        return "You are not connected to any database"
 
 
 def menu():
-    print("[MENU]::")
+    print("\n\n[MENU]::")
     print("\t[OPTION 1]:: view tables")
+    print("\t[OPTION 9]:: Choose database")
+    print("\t[OPTION 0]:: exit")
 
     while True:
         try:
@@ -53,10 +73,15 @@ def menu():
 
 if __name__ == "__main__":
 
-    (idx, databases) = setup()
-    mdb = databases[idx]
+    option = 9
+    while True:
+        if option == 0:
+            break
+        elif option == 9:
+            (idx, databases) = setup()
+            mdb = databases[idx]
+        option = menu()
 
-    option = menu()
     ### Temp 1
     # ep = databases[0]
     # ep.db_connect()

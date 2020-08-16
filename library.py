@@ -48,7 +48,7 @@ class DataBase:
         starts connection with database
         """
 
-        print(f"Conecting to database {self.name}...")
+        print(f"[INFO]:: Conecting to database {self.name}...")
 
         self.connection = connect(
             host = self.host,
@@ -59,7 +59,7 @@ class DataBase:
         self.cursor = self.connection.cursor()
         self.connected = True
 
-        print("Success!")
+        print("[INFO]:: Success!")
 
     def close(self, save_changes=True):
         """
