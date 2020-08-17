@@ -102,10 +102,8 @@ class DataBase:
             ] = credentials.readlines()
 
             # Gets rid of "\n"
-            self.host = self.host.replace("\n", "")
-            self.database = self.database.replace("\n", "")
-            self.user = self.user.replace("\n", "")
-            self.password = self.password.replace("\n", "")
+            for credential in self.credentials():
+                credential.replace("\n", "")
 
     def credentials(self):
         """
