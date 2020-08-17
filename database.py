@@ -45,10 +45,10 @@ class Program:
         return query
 
     def connect_db(self):
-        self.databases[self.choose_db()]
+        idx = self.choose_db()
         try:
-            self.databases[query].db_connect()
-            self.mdb = self.databases[query]
+            self.databases[idx].db_connect()
+            self.mdb = self.databases[idx]
         except OperationalError:
             print("[FAIL]:: Can't access database: Wrong credentials")
 
@@ -118,7 +118,7 @@ class Program:
                 print(my_program.status())
 
             elif my_program.option == 2:
-                my_program.choose_db()
+                my_program.connect_db()
 
             elif my_program.option == 3:
                 if my_program.mdb:
