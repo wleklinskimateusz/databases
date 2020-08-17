@@ -1,5 +1,5 @@
 from library import *
-from os import listdir
+from os import listdir, remove
 
 
 class Program:
@@ -21,13 +21,16 @@ class Program:
                 print(f"[INFO]::Added new Database: {name}")
 
 
-    def choose_db(self):
-
+    def print_db(self):
         print("\n\n[INFO]:: YOUR DATABASES:")
         for db in self.databases:
             print(f"\t[DB-{self.databases.index(db)}]:: {str(db).upper()}")
 
         print()
+
+    def choose_db(self):
+
+        self.print_db()
 
         print(f"[QUERY]:: Choose database you want to be connected with (number from 0 to {self.databases.index(self.databases[-1])}):")
         while True:
@@ -39,12 +42,21 @@ class Program:
                 break
             except ValueError:
                 print("[FAIL]:: Invalid number! Try Again")
+        return query
 
+    def connect_db(self):
+        self.databases[self.choose_db()]
         try:
             self.databases[query].db_connect()
             self.mdb = self.databases[query]
         except OperationalError:
             print("[FAIL]:: Can't access database: Wrong credentials")
+
+    def delete_db(self):
+        db = self.databases[self.choose_db()]
+        remove(db.filename)
+        self.databases.pop(self.databases.index(db))
+        print(f"[INFO]:: Database '{db}' deleted")
 
 
     def active_database(self):
@@ -53,7 +65,7 @@ class Program:
                 return db
 
     def status(self):
-        db = my_program.active_database()
+        db = self.active_database()
         if db:
             return f"[INFO]:: You are connected to {db}"
         else:
@@ -67,6 +79,7 @@ class Program:
         print("\t[OPTION 3]:: View tables of the active database")
         print("\t[OPTION 4]:: Close conection with current database")
         print("\t[OPTION 5]:: Add new database")
+        print("\t[OPTION 6]:: Delete database")
         print("\t[OPTION 0]:: exit")
 
         while True:
@@ -92,6 +105,7 @@ class Program:
             new_db.password = input("[QUERY]:: password: ")
             new_db.save_credentials()
 
+
     def run(self):
 
         my_program.setup()
@@ -110,12 +124,20 @@ class Program:
                 if my_program.mdb:
                     my_program.mdb.get_table_names()
                     my_program.mdb.tables_view()
+                else:
+                    print("[FAIL]:: You are not connected to any database")
 
             elif my_program.option == 4:
-                my_program.mdb.close()
+                if my_program.mdb:
+                    my_program.mdb.close()
+                else:
+                    print("[WARNING]:: You are not connected to any database")
 
             elif my_program.option == 5:
                 my_program.add_new_db()
+
+            elif my_program.option == 6:
+                my_program.delete_db()
 
             input("\n[INFO]: press Enter to continue...")
             print()
